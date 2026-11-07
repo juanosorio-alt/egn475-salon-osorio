@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Services | Bella Vista Salon</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    >
+    <style>
+      .service-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .service-card h2,
+      .service-card p {
+        margin-bottom: 0.5rem;
+      }
+
+      .service-card a {
+        flex-shrink: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="container">
+      <nav aria-label="Main navigation">
+        <ul>
+          <li><strong>Bella Vista Salon</strong></li>
+        </ul>
+        <ul>
+          <li><a href="services.html" aria-current="page">Services</a></li>
+          <li><a href="my-appointments.html">My Appointments</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <h1>Services</h1>
+      <p>Choose a service to book an appointment.</p>
+
+      <article class="service-card">
+        <div>
+          <h2>Haircut</h2>
+          <p>Haircut and basic styling</p>
+          <p><strong>$35</strong> · 30 min</p>
+        </div>
+        <a href="choose-date-time.html" role="button">Book</a>
+      </article>
+
+      <article class="service-card">
+        <div>
+          <h2>Hairstyling</h2>
+          <p>Wash and blow-dry</p>
+          <p><strong>$45</strong> · 45 min</p>
+        </div>
+        <a href="choose-date-time.html" role="button">Book</a>
+      </article>
+
+      <article class="service-card">
+        <div>
+          <h2>Hair Coloring</h2>
+          <p>Single-process hair color</p>
+          <p><strong>$85</strong> · 90 min</p>
+        </div>
+        <a href="choose-date-time.html" role="button">Book</a>
+      </article>
+    </main>
+  </body>
+</html>
