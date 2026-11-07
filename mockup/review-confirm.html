@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Review and Confirm | Bella Vista Salon</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    >
+    <style>
+      .booking-navigation {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .booking-navigation a {
+        margin-bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="container">
+      <nav aria-label="Main navigation">
+        <ul>
+          <li><strong>Bella Vista Salon</strong></li>
+        </ul>
+        <ul>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="my-appointments.html">My Appointments</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <h1>Review and Confirm</h1>
+
+      <article>
+        <h2>Appointment summary</h2>
+        <p>Haircut · $35 · 30 min</p>
+        <p>Saturday, November 14, 2026 · 10:00 AM</p>
+      </article>
+
+      <form>
+        <label for="full-name">Full name</label>
+        <input id="full-name" name="full-name" type="text">
+
+        <label for="phone-number">Phone number</label>
+        <input id="phone-number" name="phone-number" type="tel">
+
+        <label for="email-address">Email address</label>
+        <input id="email-address" name="email-address" type="email">
+
+        <label for="cancellation-policy">
+          <input id="cancellation-policy" name="cancellation-policy" type="checkbox">
+          I acknowledge the cancellation policy.
+        </label>
+      </form>
+
+      <nav class="booking-navigation" aria-label="Booking navigation">
+        <a href="choose-date-time.html">Back</a>
+        <a href="my-appointments.html" role="button">Submit Request</a>
+      </nav>
+
+      <p>Your request will be pending until the salon confirms it.</p>
+    </main>
+  </body>
+</html>
