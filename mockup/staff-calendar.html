@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Staff Calendar | Bella Vista Salon</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    >
+  </head>
+  <body>
+    <header class="container">
+      <nav aria-label="Staff navigation">
+        <ul>
+          <li><strong>Bella Vista Salon</strong></li>
+        </ul>
+        <ul>
+          <li><a href="staff-calendar.html" aria-current="page">Staff Calendar</a></li>
+          <li><a href="services-admin.html">Services Admin</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <h1>Staff Calendar</h1>
+
+      <label for="calendar-date">Select a date</label>
+      <input id="calendar-date" name="calendar-date" type="date" value="2026-11-14">
+
+      <table>
+        <thead>
+          <tr>
+            <th scope="col">Time</th>
+            <th scope="col">Client</th>
+            <th scope="col">Service</th>
+            <th scope="col">Stylist</th>
+            <th scope="col">Status</th>
+            <th scope="col">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">10:00 AM</th>
+            <td>Sofia Martinez</td>
+            <td>Haircut</td>
+            <td>
+              <label for="pending-stylist">Select stylist</label>
+              <select id="pending-stylist" name="pending-stylist">
+                <option value="" selected>Select stylist</option>
+                <option value="ana">Ana</option>
+              </select>
+            </td>
+            <td>Pending</td>
+            <td>
+              <button type="button">Confirm</button>
+              <button type="button" class="secondary">Cancel</button>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">11:30 AM</th>
+            <td>Maya Rivera</td>
+            <td>Hairstyling</td>
+            <td>Ana</td>
+            <td>Confirmed</td>
+            <td>
+              <button type="button">Mark Completed</button>
+              <button type="button" class="secondary">Cancel</button>
+            </td>
+          </tr>
+          <tr>
+            <th scope="row">2:00 PM</th>
+            <td>Lena Diaz</td>
+            <td>Hair Coloring</td>
+            <td>Ana</td>
+            <td>Completed</td>
+            <td>No actions</td>
+          </tr>
+        </tbody>
+      </table>
+    </main>
+  </body>
+</html>
