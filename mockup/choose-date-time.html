@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Choose Date and Time | Bella Vista Salon</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
+    >
+    <style>
+      .booking-navigation {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 1rem;
+      }
+
+      .booking-navigation a {
+        margin-bottom: 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="container">
+      <nav aria-label="Main navigation">
+        <ul>
+          <li><strong>Bella Vista Salon</strong></li>
+        </ul>
+        <ul>
+          <li><a href="services.html">Services</a></li>
+          <li><a href="my-appointments.html">My Appointments</a></li>
+        </ul>
+      </nav>
+    </header>
+
+    <main class="container">
+      <h1>Choose Date and Time</h1>
+      <p>Haircut · $35 · 30 min</p>
+
+      <label for="appointment-date">Date</label>
+      <select id="appointment-date" name="appointment-date">
+        <option value="2026-11-14" selected>Saturday, November 14, 2026</option>
+      </select>
+
+      <fieldset>
+        <legend>Available times</legend>
+        <label for="time-1000">
+          <input id="time-1000" type="radio" name="appointment-time" value="10:00" checked>
+          10:00 AM
+        </label>
+        <label for="time-1130">
+          <input id="time-1130" type="radio" name="appointment-time" value="11:30">
+          11:30 AM
+        </label>
+        <label for="time-1400">
+          <input id="time-1400" type="radio" name="appointment-time" value="14:00">
+          2:00 PM
+        </label>
+      </fieldset>
+
+      <nav class="booking-navigation" aria-label="Booking navigation">
+        <a href="services.html">Back to Services</a>
+        <a href="review-confirm.html" role="button">Continue</a>
+      </nav>
+    </main>
+  </body>
+</html>
