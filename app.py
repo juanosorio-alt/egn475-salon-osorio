@@ -51,3 +51,6 @@ def calendar():
 @app.route("/appointments")
 def appointments():
     return render_template("appointments.html", appointments=SAMPLE_APPOINTMENTS)
+@app.route("/services/admin")
+def services_admin():
+    return render_template("services_admin.html", services=SAMPLE_SERVICES)

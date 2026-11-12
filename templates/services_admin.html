@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block title %}Services Admin | Bella Vista Salon{% endblock %}
+
+{% block content %}
+  <h1>Services Admin</h1>
+  <p>Manage the services clients can book.</p>
+
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Service</th>
+        <th scope="col">Description</th>
+        <th scope="col">Price</th>
+        <th scope="col">Duration</th>
+        <th scope="col">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for service in services %}
+        <tr>
+          <th scope="row">{{ service.name }}</th>
+          <td>{{ service.description }}</td>
+          <td>${{ "%.2f"|format(service.price_cents / 100) }}</td>
+          <td>{{ service.duration_minutes }} min</td>
+          <td><button type="button" disabled>Edit</button></td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <h2>Add or edit a service</h2>
+  <form>
+    <label for="service-name">Service name</label>
+    <input id="service-name" name="service-name" type="text">
+
+    <label for="service-description">Description</label>
+    <textarea id="service-description" name="service-description"></textarea>
+
+    <label for="service-price">Price ($)</label>
+    <input id="service-price" name="service-price" type="number" step="0.01">
+
+    <label for="service-duration">Duration (min)</label>
+    <input id="service-duration" name="service-duration" type="number" step="1">
+
+    <button type="button" disabled>Save Service</button>
+    <button type="button" class="secondary" disabled>Cancel</button>
+  </form>
+
+  <p>Service changes are not saved in this version.</p>
+  <a href="{{ url_for('calendar') }}">Back to Staff Calendar</a>
+{% endblock %}
