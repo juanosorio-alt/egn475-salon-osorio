@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}Services | Bella Vista Salon{% endblock %}
+
+{% block content %}
+  <h1>Services</h1>
+  <p>Choose a service to book an appointment.</p>
+
+  {% if services %}
+    {% for service in services %}
+      <article class="service-card">
+        <div>
+          <h2>{{ service.name }}</h2>
+          <p>{{ service.description }}</p>
+          <p><strong>${{ "%.2f"|format(service.price_cents / 100) }}</strong> · {{ service.duration_minutes }} minutes</p>
+        </div>
+      </article>
+    {% endfor %}
+  {% else %}
+    <p>No services are currently available.</p>
+  {% endif %}
+{% endblock %}
