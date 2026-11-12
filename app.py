@@ -1,4 +1,4 @@
-from flask import Flask, render_template
+from flask import Flask, abort, render_template
 # Import Flask so I can create a web application.
 app = Flask(__name__)
 SAMPLE_SERVICES = [
@@ -22,3 +22,12 @@ def about():
 @app.route("/services")
 def services():
     return render_template("services.html", services=SAMPLE_SERVICES)
+@app.route("/services/<int:service_id>")
+def service_detail(service_id):
+    service = next(
+        (item for item in SAMPLE_SERVICES if item["id"] == service_id),
+        None,
+    )
+    if service is None:
+        abort(404)
+    return render_template("service_detail.html", service=service)
