@@ -14,7 +14,12 @@ SAMPLE_CALENDAR = [
     {"time": "11:30 AM", "client": "Maya Rivera", "service": "Hairstyling", "stylist": "Ana", "status": "Confirmed"},
     {"time": "2:00 PM", "client": "Lena Diaz", "service": "Hair Coloring", "stylist": "Ana", "status": "Completed"},
 ]
-
+SAMPLE_APPOINTMENTS = [
+    {"service": "Haircut", "date": "Nov 14, 2026", "time": "10:00 AM", "status": "Pending"},
+    {"service": "Hairstyling", "date": "Nov 21, 2026", "time": "11:30 AM", "status": "Confirmed"},
+    {"service": "Hair Coloring", "date": "Nov 3, 2026", "time": "2:00 PM", "status": "Completed"},
+    {"service": "Haircut", "date": "Nov 5, 2026", "time": "4:00 PM", "status": "Canceled"},
+]
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -43,3 +48,6 @@ def book():
 @app.route("/calendar")
 def calendar():
     return render_template("calendar.html", appointments=SAMPLE_CALENDAR)
+@app.route("/appointments")
+def appointments():
+    return render_template("appointments.html", appointments=SAMPLE_APPOINTMENTS)
