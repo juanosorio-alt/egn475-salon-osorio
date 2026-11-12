@@ -31,3 +31,6 @@ def service_detail(service_id):
     if service is None:
         abort(404)
     return render_template("service_detail.html", service=service)
+@app.route("/book")
+def book():
+    return render_template("book.html", services=SAMPLE_SERVICES)

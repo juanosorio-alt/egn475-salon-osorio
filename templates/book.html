@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+
+{% block title %}Book an Appointment | Bella Vista Salon{% endblock %}
+
+{% block content %}
+  <h1>Book an Appointment</h1>
+
+  <form>
+    <label for="service">Service</label>
+    <select id="service" name="service">
+      {% for service in services %}
+        <option value="{{ service.id }}">{{ service.name }} — ${{ "%.2f"|format(service.price_cents / 100) }}</option>
+      {% endfor %}
+    </select>
+
+    <label for="appointment-date">Date</label>
+    <input id="appointment-date" name="appointment-date" type="date">
+
+    <label for="appointment-time">Time</label>
+    <select id="appointment-time" name="appointment-time">
+      <option value="10:00">10:00 AM</option>
+      <option value="11:30">11:30 AM</option>
+      <option value="14:00">2:00 PM</option>
+    </select>
+
+    <label for="full-name">Full name</label>
+    <input id="full-name" name="full-name" type="text">
+
+    <label for="phone-number">Phone number</label>
+    <input id="phone-number" name="phone-number" type="tel">
+
+    <label for="email-address">Email address</label>
+    <input id="email-address" name="email-address" type="email">
+
+    <label for="cancellation-policy">
+      <input id="cancellation-policy" name="cancellation-policy" type="checkbox">
+      I acknowledge the cancellation policy.
+    </label>
+
+    <button type="button" disabled>Submit Request</button>
+  </form>
+
+  <p>Booking requests are not saved in this version.</p>
+  <a href="{{ url_for('services') }}">Back to Services</a>
+{% endblock %}
