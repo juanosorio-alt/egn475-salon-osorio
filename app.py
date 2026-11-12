@@ -9,6 +9,12 @@ SAMPLE_SERVICES = [
     {"id": 5, "name": "Root Touch-Up", "description": "Color touch-up for new growth", "price_cents": 6000, "duration_minutes": 60},
     {"id": 6, "name": "Special Occasion Updo", "description": "Pinned hairstyle for special events", "price_cents": 7000, "duration_minutes": 60},
 ]
+SAMPLE_CALENDAR = [
+    {"time": "10:00 AM", "client": "Sofia Martinez", "service": "Haircut", "stylist": None, "status": "Pending"},
+    {"time": "11:30 AM", "client": "Maya Rivera", "service": "Hairstyling", "stylist": "Ana", "status": "Confirmed"},
+    {"time": "2:00 PM", "client": "Lena Diaz", "service": "Hair Coloring", "stylist": "Ana", "status": "Completed"},
+]
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -34,3 +40,6 @@ def service_detail(service_id):
 @app.route("/book")
 def book():
     return render_template("book.html", services=SAMPLE_SERVICES)
+@app.route("/calendar")
+def calendar():
+    return render_template("calendar.html", appointments=SAMPLE_CALENDAR)

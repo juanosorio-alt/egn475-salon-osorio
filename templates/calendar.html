@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+
+{% block title %}Staff Calendar | Bella Vista Salon{% endblock %}
+
+{% block content %}
+  <h1>Staff Calendar</h1>
+
+  <label for="calendar-date">Select a date</label>
+  <input id="calendar-date" name="calendar-date" type="date" value="2026-11-14">
+
+  <table>
+    <thead>
+      <tr>
+        <th scope="col">Time</th>
+        <th scope="col">Client</th>
+        <th scope="col">Service</th>
+        <th scope="col">Stylist</th>
+        <th scope="col">Status</th>
+        <th scope="col">Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for appointment in appointments %}
+        <tr>
+          <th scope="row">{{ appointment.time }}</th>
+          <td>{{ appointment.client }}</td>
+          <td>{{ appointment.service }}</td>
+          <td>
+            {% if appointment.status == "Pending" %}
+              <label for="stylist-{{ loop.index }}">Select stylist</label>
+              <select id="stylist-{{ loop.index }}" name="stylist-{{ loop.index }}">
+                <option value="" selected>Select stylist</option>
+                <option value="ana">Ana</option>
+              </select>
+            {% else %}
+              {{ appointment.stylist }}
+            {% endif %}
+          </td>
+          <td>{{ appointment.status }}</td>
+          <td>
+            {% if appointment.status == "Pending" %}
+              <button type="button" disabled>Confirm</button>
+              <button type="button" class="secondary" disabled>Cancel</button>
+            {% elif appointment.status == "Confirmed" %}
+              <button type="button" disabled>Mark Completed</button>
+              <button type="button" class="secondary" disabled>Cancel</button>
+            {% elif appointment.status == "Completed" %}
+              No actions.
+            {% endif %}
+          </td>
+        </tr>
+      {% else %}
+        <tr>
+          <td colspan="6">No appointments for this date.</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
