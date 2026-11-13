@@ -25,6 +25,10 @@
           <td>{{ service.duration_minutes }} min</td>
           <td><button type="button" disabled>Edit</button></td>
         </tr>
+      {% else %}
+      <tr>
+        <td colspan="5">No services are currently available.</td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
