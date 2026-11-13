@@ -44,7 +44,7 @@
             {% elif appointment.status == "Confirmed" %}
               <button type="button" disabled>Mark Completed</button>
               <button type="button" class="secondary" disabled>Cancel</button>
-            {% elif appointment.status == "Completed" %}
+            {% elif appointment.status in ["Completed", "Canceled"] %}
               No actions.
             {% endif %}
           </td>
