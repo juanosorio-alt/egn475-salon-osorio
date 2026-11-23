@@ -1,6 +1,12 @@
+import os
+
+import db
 from flask import Flask, abort, render_template
 # Import Flask so I can create a web application.
 app = Flask(__name__)
+app.config["DATABASE"] = os.path.join(app.instance_path, "salon.sqlite")
+os.makedirs(app.instance_path, exist_ok=True)
+db.init_app(app)
 SAMPLE_SERVICES = [
     {"id": 1, "name": "Haircut", "description": "Haircut and basic styling", "price_cents": 3500, "duration_minutes": 30},
     {"id": 2, "name": "Hairstyling", "description": "Wash and blow-dry", "price_cents": 4500, "duration_minutes": 45},
