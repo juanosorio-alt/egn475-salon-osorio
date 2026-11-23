@@ -1,7 +1,8 @@
+from decimal import Decimal, InvalidOperation
 import os
 
 import db
-from flask import Flask, abort, render_template
+from flask import Flask, abort, redirect, render_template, request, url_for
 # Import Flask so I can create a web application.
 app = Flask(__name__)
 app.config["DATABASE"] = os.path.join(app.instance_path, "salon.sqlite")
@@ -73,3 +74,68 @@ def appointments():
 @app.route("/services/admin")
 def services_admin():
     return render_template("services_admin.html", services=SAMPLE_SERVICES)
+
+
+@app.route("/admin/services/new", methods=["GET", "POST"])
+def service_new():
+    form_values = {
+        "name": "",
+        "description": "",
+        "price": "",
+        "duration_minutes": "",
+    }
+    errors = []
+
+    if request.method == "POST":
+        form_values = {
+            "name": request.form.get("name", ""),
+            "description": request.form.get("description", ""),
+            "price": request.form.get("price", ""),
+            "duration_minutes": request.form.get("duration_minutes", ""),
+        }
+
+        name = form_values["name"].strip()
+        if not name:
+            errors.append("Service name is required.")
+
+        price_cents = 0
+        try:
+            price = Decimal(form_values["price"])
+            if not price.is_finite() or price < 0:
+                errors.append("Price must be a valid non-negative amount.")
+            else:
+                cents = price * 100
+                if cents != cents.to_integral_value():
+                    errors.append("Price must have no more than two decimal places.")
+                else:
+                    price_cents = int(cents)
+        except InvalidOperation:
+            errors.append("Enter a valid price in dollars.")
+
+        duration_minutes = 0
+        try:
+            duration_minutes = int(form_values["duration_minutes"])
+            if duration_minutes <= 0:
+                errors.append("Duration must be a positive whole number of minutes.")
+        except ValueError:
+            errors.append("Duration must be a positive whole number of minutes.")
+
+        if not errors:
+            db.get_db().execute(
+                """
+                INSERT INTO services
+                    (name, description, price_cents, duration_minutes, active)
+                VALUES (?, ?, ?, ?, ?)
+                """,
+                (
+                    name,
+                    form_values["description"],
+                    price_cents,
+                    duration_minutes,
+                    1,
+                ),
+            )
+            db.get_db().commit()
+            return redirect(url_for("services"))
+
+    return render_template("service_new.html", form_values=form_values, errors=errors)

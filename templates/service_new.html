@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}Add Service | Bella Vista Salon{% endblock %}
+
+{% block content %}
+  <h1>Add Service</h1>
+
+  {% if errors %}
+    <div role="alert">
+      {% for error in errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post">
+    <label for="name">Service name</label>
+    <input id="name" name="name" type="text" value="{{ form_values.name }}" required>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description">{{ form_values.description }}</textarea>
+
+    <label for="price">Price (dollars)</label>
+    <input id="price" name="price" type="number" step="0.01" min="0" value="{{ form_values.price }}" required>
+
+    <label for="duration_minutes">Duration (minutes)</label>
+    <input id="duration_minutes" name="duration_minutes" type="number" step="1" min="1" value="{{ form_values.duration_minutes }}" required>
+
+    <button type="submit">Save Service</button>
+  </form>
+{% endblock %}
