@@ -10,6 +10,15 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev")
 app.config["DATABASE"] = os.path.join(app.instance_path, "salon.sqlite")
 os.makedirs(app.instance_path, exist_ok=True)
 db.init_app(app)
+
+ALLOWED_STATUS_TRANSITIONS = {
+    "requested": ("confirmed", "canceled"),
+    "confirmed": ("completed", "canceled"),
+    "completed": (),
+    "canceled": (),
+}
+
+
 def validate_service(form):
     errors = []
     name = form.get("name", "").strip()
@@ -215,12 +224,63 @@ def book():
 
 @app.route("/calendar")
 def calendar():
-    return render_template("calendar.html", appointments=_get_appointments())
+    return render_template(
+        "calendar.html",
+        appointments=_get_appointments(),
+        allowed_transitions=ALLOWED_STATUS_TRANSITIONS,
+    )
 
 
 @app.route("/appointments")
 def appointments():
     return render_template("appointments.html", appointments=_get_appointments())
+
+
+@app.route("/appointments/<int:appointment_id>/status", methods=["POST"])
+def appointment_status(appointment_id):
+    connection = db.get_db()
+    appointment = connection.execute(
+        "SELECT id, status FROM appointments WHERE id = ?",
+        (appointment_id,),
+    ).fetchone()
+    if appointment is None:
+        abort(404)
+
+    current_status = appointment["status"]
+    submitted_current_status = request.form.get("current_status")
+    if (
+        submitted_current_status is not None
+        and submitted_current_status != current_status
+    ):
+        flash(
+            "This appointment status has changed. Refresh the calendar before trying again.",
+            "error",
+        )
+        return redirect(url_for("calendar"))
+
+    requested_status = request.form.get("status", "")
+    if requested_status not in ALLOWED_STATUS_TRANSITIONS.get(current_status, ()):
+        flash("That appointment status change is not allowed.", "error")
+        return redirect(url_for("calendar"))
+
+    result = connection.execute(
+        """
+        UPDATE appointments
+        SET status = ?
+        WHERE id = ? AND status = ?
+        """,
+        (requested_status, appointment_id, current_status),
+    )
+    if result.rowcount != 1:
+        flash(
+            "This appointment status changed before your update. Refresh the calendar and try again.",
+            "error",
+        )
+        return redirect(url_for("calendar"))
+
+    connection.commit()
+    flash(f"Appointment status updated to {requested_status}.", "success")
+    return redirect(url_for("calendar"))
 
 
 @app.route("/services/admin")

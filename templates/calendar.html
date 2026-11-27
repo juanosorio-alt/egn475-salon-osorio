@@ -23,15 +23,26 @@
           <td>{{ appointment.time }}</td>
           <td>{{ appointment.client_name }}</td>
           <td>{{ appointment.service_name }}</td>
-          <td>{{ appointment.status|capitalize }}</td>
+          <td><small><mark>{{ appointment.status|capitalize }}</mark></small></td>
           <td>
-            {% if appointment.status == "requested" %}
-              <button type="button" disabled>Confirm</button>
-              <button type="button" class="secondary" disabled>Cancel</button>
-            {% elif appointment.status == "confirmed" %}
-              <button type="button" disabled>Mark Completed</button>
-              <button type="button" class="secondary" disabled>Cancel</button>
-            {% elif appointment.status in ["completed", "canceled"] %}
+            {% set transitions = allowed_transitions.get(appointment.status, ()) %}
+            {% if transitions %}
+              {% for next_status in transitions %}
+                <form method="post"
+                      action="{{ url_for('appointment_status', appointment_id=appointment.id) }}"
+                      style="display: inline; margin: 0">
+                  <input type="hidden" name="current_status" value="{{ appointment.status }}">
+                  <button type="submit" name="status" value="{{ next_status }}"
+                          class="{% if next_status == 'canceled' %}secondary {% endif %}outline"
+                          style="width: auto; margin: 0; padding: 0.25rem 0.5rem">
+                    {% if next_status == "confirmed" %}Confirm
+                    {% elif next_status == "completed" %}Mark Completed
+                    {% elif next_status == "canceled" %}Cancel
+                    {% endif %}
+                  </button>
+                </form>
+              {% endfor %}
+            {% else %}
               No actions.
             {% endif %}
           </td>
