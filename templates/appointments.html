@@ -4,6 +4,7 @@
 
 {% block content %}
   <h1>My Appointments</h1>
+  <p>Showing all prototype appointments; appointments are not filtered by client until login is implemented.</p>
 
   <table>
     <thead>
@@ -11,20 +12,22 @@
         <th scope="col">Service</th>
         <th scope="col">Date</th>
         <th scope="col">Time</th>
+        <th scope="col">Client</th>
         <th scope="col">Status</th>
       </tr>
     </thead>
     <tbody>
       {% for appointment in appointments %}
         <tr>
-          <th scope="row">{{ appointment.service }}</th>
+          <th scope="row">{{ appointment.service_name }}</th>
           <td>{{ appointment.date }}</td>
           <td>{{ appointment.time }}</td>
-          <td>{{ appointment.status }}</td>
+          <td>{{ appointment.client_name }}</td>
+          <td>{{ appointment.status|capitalize }}</td>
         </tr>
       {% else %}
         <tr>
-          <td colspan="4">You have no appointments.</td>
+          <td colspan="5">You have no appointments.</td>
         </tr>
       {% endfor %}
     </tbody>

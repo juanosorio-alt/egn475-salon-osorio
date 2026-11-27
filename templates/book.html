@@ -5,41 +5,48 @@
 {% block content %}
   <h1>Book an Appointment</h1>
 
-  <form>
-    <label for="service">Service</label>
-    <select id="service" name="service">
+  {% if errors %}
+    <div role="alert">
+      {% for error in errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post" action="{{ url_for('book') }}">
+    <label for="client_name">Client name</label>
+    <input id="client_name" name="client_name" type="text"
+           value="{{ form_values.client_name }}" required>
+
+    <label for="service_id">Service</label>
+    <select id="service_id" name="service_id" required>
+      <option value="" {% if not form_values.service_id %}selected{% endif %}>Choose a service</option>
+      {% if form_values.service_id and form_values.service_id not in available_service_ids %}
+        <option value="{{ form_values.service_id }}" selected>
+          Unavailable service ({{ form_values.service_id }})
+        </option>
+      {% endif %}
       {% for service in services %}
-        <option value="{{ service.id }}">{{ service.name }} — ${{ "%.2f"|format(service.price_cents / 100) }}</option>
+        <option value="{{ service.id }}"
+                {% if form_values.service_id == service.id|string %}selected{% endif %}>
+          {{ service.name }} — ${{ "%.2f"|format(service.price_cents / 100) }}
+        </option>
       {% endfor %}
     </select>
 
-    <label for="appointment-date">Date</label>
-    <input id="appointment-date" name="appointment-date" type="date">
+    <label for="date">Date (YYYY-MM-DD)</label>
+    <input id="date" name="date" type="text" inputmode="numeric"
+           placeholder="YYYY-MM-DD" value="{{ form_values.date }}" required>
 
-    <label for="appointment-time">Time</label>
-    <select id="appointment-time" name="appointment-time">
-      <option value="10:00">10:00 AM</option>
-      <option value="11:30">11:30 AM</option>
-      <option value="14:00">2:00 PM</option>
-    </select>
+    <label for="time">Time (HH:MM, 09:00–17:30)</label>
+    <input id="time" name="time" type="text" inputmode="numeric"
+           placeholder="HH:MM" value="{{ form_values.time }}" required>
 
-    <label for="full-name">Full name</label>
-    <input id="full-name" name="full-name" type="text">
+    <label for="notes">Notes (optional)</label>
+    <textarea id="notes" name="notes">{{ form_values.notes }}</textarea>
 
-    <label for="phone-number">Phone number</label>
-    <input id="phone-number" name="phone-number" type="tel">
-
-    <label for="email-address">Email address</label>
-    <input id="email-address" name="email-address" type="email">
-
-    <label for="cancellation-policy">
-      <input id="cancellation-policy" name="cancellation-policy" type="checkbox">
-      I acknowledge the cancellation policy.
-    </label>
-
-    <button type="button" disabled>Submit Request</button>
+    <button type="submit">Submit Request</button>
   </form>
 
-  <p>Booking requests are not saved in this version.</p>
   <a href="{{ url_for('services') }}">Back to Services</a>
 {% endblock %}

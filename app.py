@@ -1,3 +1,4 @@
+from datetime import date, datetime, time as datetime_time
 from decimal import Decimal, DecimalException
 import os
 
@@ -9,27 +10,6 @@ app.config["SECRET_KEY"] = os.environ.get("SECRET_KEY", "dev")
 app.config["DATABASE"] = os.path.join(app.instance_path, "salon.sqlite")
 os.makedirs(app.instance_path, exist_ok=True)
 db.init_app(app)
-SAMPLE_SERVICES = [
-    {"id": 1, "name": "Haircut", "description": "Haircut and basic styling", "price_cents": 3500, "duration_minutes": 30},
-    {"id": 2, "name": "Hairstyling", "description": "Wash and blow-dry", "price_cents": 4500, "duration_minutes": 45},
-    {"id": 3, "name": "Hair Coloring", "description": "Single-process hair color", "price_cents": 8500, "duration_minutes": 90},
-    {"id": 4, "name": "Deep Conditioning", "description": "Moisturizing treatment for dry hair", "price_cents": 2500, "duration_minutes": 30},
-    {"id": 5, "name": "Root Touch-Up", "description": "Color touch-up for new growth", "price_cents": 6000, "duration_minutes": 60},
-    {"id": 6, "name": "Special Occasion Updo", "description": "Pinned hairstyle for special events", "price_cents": 7000, "duration_minutes": 60},
-]
-SAMPLE_CALENDAR = [
-    {"time": "10:00 AM", "client": "Sofia Martinez", "service": "Haircut", "stylist": None, "status": "Pending"},
-    {"time": "11:30 AM", "client": "Maya Rivera", "service": "Hairstyling", "stylist": "Ana", "status": "Confirmed"},
-    {"time": "2:00 PM", "client": "Lena Diaz", "service": "Hair Coloring", "stylist": "Ana", "status": "Completed"},
-]
-SAMPLE_APPOINTMENTS = [
-    {"service": "Haircut", "date": "Nov 14, 2026", "time": "10:00 AM", "status": "Pending"},
-    {"service": "Hairstyling", "date": "Nov 21, 2026", "time": "11:30 AM", "status": "Confirmed"},
-    {"service": "Hair Coloring", "date": "Nov 3, 2026", "time": "2:00 PM", "status": "Completed"},
-    {"service": "Haircut", "date": "Nov 5, 2026", "time": "4:00 PM", "status": "Canceled"},
-]
-
-
 def validate_service(form):
     errors = []
     name = form.get("name", "").strip()
@@ -80,6 +60,63 @@ def _price_to_cents(value):
     return -cents if sign else cents
 
 
+def validate_appointment(form):
+    errors = []
+
+    client_name = form.get("client_name", "")
+    if not isinstance(client_name, str) or not client_name.strip():
+        errors.append("Client name is required.")
+
+    try:
+        service_id = int(form.get("service_id", ""))
+    except (TypeError, ValueError):
+        errors.append("Choose an available service.")
+    else:
+        if not 1 <= service_id <= 9223372036854775807:
+            errors.append("Choose an available service.")
+        elif db.get_db().execute(
+            "SELECT 1 FROM services WHERE id = ? AND active = 1",
+            (service_id,),
+        ).fetchone() is None:
+            errors.append("Choose an available service.")
+
+    date_value = form.get("date", "")
+    try:
+        appointment_date = date.fromisoformat(date_value)
+        if appointment_date.isoformat() != date_value:
+            raise ValueError
+    except (TypeError, ValueError):
+        errors.append("Enter a valid date in YYYY-MM-DD format.")
+    else:
+        if appointment_date < date.today():
+            errors.append("Appointment date cannot be in the past.")
+
+    time_value = form.get("time", "")
+    try:
+        appointment_time = datetime.strptime(time_value, "%H:%M").time()
+        if appointment_time.strftime("%H:%M") != time_value:
+            raise ValueError
+    except (TypeError, ValueError):
+        errors.append("Enter a valid time in HH:MM format.")
+    else:
+        if not datetime_time(9, 0) <= appointment_time <= datetime_time(17, 30):
+            errors.append("Appointment time must be between 09:00 and 17:30.")
+
+    return errors
+
+
+def _get_appointments():
+    return db.get_db().execute(
+        """
+        SELECT a.id, a.client_name, a.service_id, s.name AS service_name,
+               a.date, a.time, a.notes, a.status
+        FROM appointments AS a
+        JOIN services AS s ON s.id = a.service_id
+        ORDER BY a.date, a.time, a.id
+        """
+    ).fetchall()
+
+
 @app.route("/")
 def home():
     return render_template("index.html")
@@ -115,15 +152,77 @@ def service_detail(service_id):
     return render_template("service_detail.html", service=service)
 
 
-@app.route("/book")
+@app.route("/book", methods=["GET", "POST"])
 def book():
-    return render_template("book.html", services=SAMPLE_SERVICES)
+    connection = db.get_db()
+    services = connection.execute(
+        """
+        SELECT id, name, price_cents
+        FROM services
+        WHERE active = 1
+        ORDER BY name
+        """
+    ).fetchall()
+    form_values = {
+        "client_name": "",
+        "service_id": "",
+        "date": "",
+        "time": "",
+        "notes": "",
+    }
+    errors = []
+
+    if request.method == "POST":
+        form_values = {
+            "client_name": request.form.get("client_name", ""),
+            "service_id": request.form.get("service_id", ""),
+            "date": request.form.get("date", ""),
+            "time": request.form.get("time", ""),
+            "notes": request.form.get("notes", ""),
+        }
+        errors = validate_appointment(request.form)
+
+        if not errors:
+            connection.execute(
+                """
+                INSERT INTO appointments
+                    (client_name, service_id, date, time, notes, status, user_id)
+                VALUES (?, ?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    form_values["client_name"].strip(),
+                    int(form_values["service_id"]),
+                    form_values["date"],
+                    form_values["time"],
+                    form_values["notes"],
+                    "requested",
+                    None,
+                ),
+            )
+            connection.commit()
+            flash("Appointment request submitted successfully.", "success")
+            return redirect(url_for("appointments"))
+
+    available_service_ids = {str(service["id"]) for service in services}
+    return render_template(
+        "book.html",
+        services=services,
+        available_service_ids=available_service_ids,
+        form_values=form_values,
+        errors=errors,
+    )
+
+
 @app.route("/calendar")
 def calendar():
-    return render_template("calendar.html", appointments=SAMPLE_CALENDAR)
+    return render_template("calendar.html", appointments=_get_appointments())
+
+
 @app.route("/appointments")
 def appointments():
-    return render_template("appointments.html", appointments=SAMPLE_APPOINTMENTS)
+    return render_template("appointments.html", appointments=_get_appointments())
+
+
 @app.route("/services/admin")
 def services_admin():
     services = db.get_db().execute(
