@@ -240,3 +240,34 @@ def service_edit(service_id):
         errors=errors,
         service_id=service_id,
     )
+
+
+@app.route("/services/<int:service_id>/delete", methods=["POST"])
+def service_delete(service_id):
+    connection = db.get_db()
+    service = connection.execute(
+        "SELECT id FROM services WHERE id = ?",
+        (service_id,),
+    ).fetchone()
+    if service is None:
+        abort(404)
+
+    appointment = connection.execute(
+        "SELECT 1 FROM appointments WHERE service_id = ? LIMIT 1",
+        (service_id,),
+    ).fetchone()
+    if appointment is not None:
+        connection.execute(
+            "UPDATE services SET active = 0 WHERE id = ?",
+            (service_id,),
+        )
+        flash("This service has appointments and was deactivated instead of deleted.", "success")
+    else:
+        connection.execute(
+            "DELETE FROM services WHERE id = ?",
+            (service_id,),
+        )
+        flash("Service deleted successfully.", "success")
+
+    connection.commit()
+    return redirect(url_for("services_admin"))
