@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Service | Bella Vista Salon{% endblock %}
+
+{% block content %}
+  <h1>Edit Service</h1>
+
+  {% if errors %}
+    <div role="alert">
+      {% for error in errors %}
+        <p>{{ error }}</p>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post">
+    <label for="name">Service name</label>
+    <input id="name" name="name" type="text" maxlength="80" value="{{ form_values.name }}" required>
+
+    <label for="description">Description</label>
+    <textarea id="description" name="description">{{ form_values.description }}</textarea>
+
+    <label for="price">Price (dollars)</label>
+    <input id="price" name="price" type="text" inputmode="decimal" value="{{ form_values.price }}" required>
+
+    <label for="duration_minutes">Duration (minutes)</label>
+    <input id="duration_minutes" name="duration_minutes" type="text" inputmode="numeric" value="{{ form_values.duration_minutes }}" required>
+
+    <label for="active">Status</label>
+    <select id="active" name="active" required>
+      {% if form_values.active not in ["0", "1"] %}
+        <option value="{{ form_values.active }}" selected>{{ form_values.active or "Choose status" }}</option>
+      {% endif %}
+      <option value="1" {% if form_values.active == "1" %}selected{% endif %}>Active</option>
+      <option value="0" {% if form_values.active == "0" %}selected{% endif %}>Inactive</option>
+    </select>
+
+    <button type="submit">Save Changes</button>
+    <a href="{{ url_for('services_admin') }}" role="button" class="secondary">Cancel</a>
+  </form>
+{% endblock %}
